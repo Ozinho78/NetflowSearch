@@ -135,3 +135,11 @@ REGISTRATION_ALLOWED_DOMAINS = [
     for d in os.environ.get("REGISTRATION_ALLOWED_DOMAINS", "").split(",")
     if d.strip()
 ]
+
+# --- Kontoaktivierung -------------------------------------------------------
+# Basis-URL für Links in Mails. Bewusst aus der Config und NICHT aus dem
+# Host-Header des Requests -> verhindert Host-Header-Injection in Mail-Links.
+SITE_URL = os.environ.get("SITE_URL", "http://127.0.0.1:8000").rstrip("/")
+
+# Gültigkeit von Aktivierungs- UND Passwort-Reset-Links (Sekunden)
+PASSWORD_RESET_TIMEOUT = 60 * 60 * 24   # 24 Stunden (Default wären 3 Tage)

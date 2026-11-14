@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Konto aktivieren – NetflowSearch{% endblock %}
+
+{% block content %}
+<div class="card auth-card">
+  <h1>Konto aktivieren</h1>
+
+  {% if valid %}
+    <p>Bitte bestätigen Sie die Aktivierung Ihres Kontos.</p>
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-primary btn-block">Konto jetzt aktivieren</button>
+    </form>
+  {% else %}
+    <ul class="errorlist nonfield">
+      <li>Dieser Link ist ungültig, abgelaufen oder wurde bereits verwendet.</li>
+    </ul>
+  {% endif %}
+
+  <p class="auth-footer"><a href="{% url 'accounts:login' %}">Zur Anmeldung</a></p>
+</div>
+{% endblock %}

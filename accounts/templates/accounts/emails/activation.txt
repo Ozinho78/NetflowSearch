@@ -1,0 +1,14 @@
+{% autoescape off %}Hallo {{ user.first_name }},
+
+für die E-Mail-Adresse {{ user.email }} wurde ein Konto bei NetflowSearch angelegt.
+
+Bitte bestätigen Sie Ihre Adresse innerhalb von {{ valid_hours }} Stunden über diesen Link:
+
+{{ activation_url }}
+
+Falls Sie sich nicht registriert haben, können Sie diese E-Mail ignorieren.
+Das Konto wird ohne Bestätigung nicht aktiviert.
+
+--
+NetflowSearch
+{% endautoescape %}
