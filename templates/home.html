@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Start – NetflowSearch{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h1>Willkommen, {{ user.first_name|default:user.email }}</h1>
+  <p>Angemeldet als <strong>{{ user.email }}</strong>.</p>
+  <p class="muted">Hier entsteht in Etappe 3 die Suche nach IP, Port und Zeitpunkt.</p>
+</div>
+{% endblock %}
