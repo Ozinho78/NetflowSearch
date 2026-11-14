@@ -112,6 +112,9 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+STATIC_URL = "static/"
+STATICFILES_DIRS = [BASE_DIR / "static"]   # NEU: projektweite statische Dateien
+
 
 # --- E-Mail -----------------------------------------------------------------
 
@@ -119,5 +122,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 DEFAULT_FROM_EMAIL = "nfsearch <noreply@localhost>"
 
-
+# --- Login / Logout ---------------------------------------------------------
+# URL-Namen statt fester Pfade -> funktionieren auch, wenn sich Pfade ändern
+LOGIN_URL = "accounts:login"          # wohin @login_required umleitet
+LOGIN_REDIRECT_URL = "home"           # nach erfolgreichem Login (ohne ?next=)
+LOGOUT_REDIRECT_URL = "accounts:login"
 
