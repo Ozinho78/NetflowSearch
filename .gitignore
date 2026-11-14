@@ -1,3 +1,7 @@
+# Editor: nur Projekteinstellungen versionieren
+.vscode/*
+!.vscode/settings.json
+
 # Python
 .venv/
 __pycache__/
