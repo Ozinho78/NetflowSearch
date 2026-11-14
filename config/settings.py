@@ -128,3 +128,10 @@ LOGIN_URL = "accounts:login"          # wohin @login_required umleitet
 LOGIN_REDIRECT_URL = "home"           # nach erfolgreichem Login (ohne ?next=)
 LOGOUT_REDIRECT_URL = "accounts:login"
 
+
+# Erlaubte Domains für die Selbstregistrierung, leer = keine Einschränkung
+REGISTRATION_ALLOWED_DOMAINS = [
+    d.strip().lower()
+    for d in os.environ.get("REGISTRATION_ALLOWED_DOMAINS", "").split(",")
+    if d.strip()
+]

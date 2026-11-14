@@ -1,7 +1,8 @@
 from django.contrib.auth import views as auth_views
 from django.urls import path
 
-# Namespace: im Template {% url 'accounts:login' %} statt nur 'login'
+from . import views
+
 app_name = "accounts"
 
 urlpatterns = [
@@ -9,9 +10,10 @@ urlpatterns = [
         "login/",
         auth_views.LoginView.as_view(
             template_name="accounts/login.html",
-            redirect_authenticated_user=True,   # Eingeloggte nicht erneut zum Login
+            redirect_authenticated_user=True,
         ),
         name="login",
     ),
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
+    path("register/", views.RegisterView.as_view(), name="register"),   # NEU
 ]
