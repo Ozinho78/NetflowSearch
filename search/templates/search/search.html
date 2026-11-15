@@ -6,6 +6,7 @@
 {% block content %}
 <div class="stack">
 
+  {# ---------- Suchformular ---------- #}
   <div class="card">
     <h1>CGNAT-Zuordnung suchen</h1>
     <p class="muted">Öffentliche IP, Port und Zeitpunkt aus der Anfrage eingeben.</p>
@@ -19,19 +20,106 @@
     </form>
   </div>
 
-  {% if query %}
+  {% if result %}
+  {# ---------- Ergebnis ---------- #}
   <div class="card">
-    <h2>Abfrage (Vorschau)</h2>
+    <h2>Ergebnis</h2>
+
+    {% if result.found %}
+      <div class="alert alert-success">
+        Zuordnung gefunden: <strong class="mono">{{ result.public_ip }}:{{ result.port }}</strong>
+        war zum angefragten Zeitpunkt vergeben.
+      </div>
+    {% elif result.assignments %}
+      <div class="alert alert-info">
+        Der Port-Block war zum angefragten Zeitpunkt <strong>nicht vergeben</strong>.
+      </div>
+    {% else %}
+      <div class="alert alert-info">
+        Im Suchfenster wurden keine NAT-Events für diese IP und diesen Port gefunden.
+      </div>
+    {% endif %}
+
+    {% if result.data_incomplete %}
+      <div class="alert alert-warning">
+        Der Datenbestand deckt das Suchfenster nicht vollständig ab
+        (Daten ab {{ result.data_start|localtime|date:"d.m.Y H:i T"|default:"–" }}).
+        Eine ältere Vergabe kann fehlen.
+      </div>
+    {% endif %}
+
+    {% if result.assignments %}
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Status</th>
+            <th>Interne IP</th>
+            <th>Protokoll</th>
+            <th>Port-Block</th>
+            <th>Seit</th>
+            <th>Bis</th>
+            <th>CGN-Router</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for a in result.assignments %}
+          <tr>
+            <td>
+              {% if a.status == "assigned" %}
+                <span class="badge badge-success">{{ a.status_label }}</span>
+              {% else %}
+                <span class="badge badge-neutral">{{ a.status_label }}</span>
+              {% endif %}
+              {% if a.near_boundary %}
+                <span class="badge badge-warning" title="Zeitpunkt liegt weniger als die Toleranz neben einem ADD/DELETE – manuell prüfen">Grenzfall</span>
+              {% endif %}
+            </td>
+            <td class="mono">{{ a.inside_ip|default:"–" }}</td>
+            <td>{{ a.protocol }}</td>
+            <td class="mono">{{ a.port_start }}–{{ a.port_end }}</td>
+            <td>
+              {% if a.start %}
+                {{ a.start|localtime|date:"d.m.Y H:i:s T" }}
+                <div class="small">{{ a.start|utc|date:"H:i:s" }} UTC</div>
+              {% else %}
+                <span class="small">vor Beginn des Suchfensters</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if a.end %}
+                {{ a.end|localtime|date:"d.m.Y H:i:s T" }}
+                <div class="small">{{ a.end|utc|date:"H:i:s" }} UTC</div>
+              {% elif a.status == "assigned" %}
+                <span class="badge badge-success">aktiv</span>
+                <div class="small">kein DELETE bis {{ result.window_end|localtime|date:"d.m.Y H:i T" }}</div>
+              {% else %}
+                <span class="small">bis Ende des Suchfensters</span>
+              {% endif %}
+            </td>
+            <td class="mono">{{ a.router }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+  </div>
+
+  {# ---------- Abfragedetails (für Nachvollziehbarkeit) ---------- #}
+  <div class="card">
+    <h2>Abfragedetails</h2>
     <table class="result-table">
-      <tr><th>Öffentliche IP</th><td>{{ query.public_ip }}</td></tr>
-      <tr><th>Port</th><td>{{ query.port }}</td></tr>
-      <tr><th>Protokoll</th><td>{{ query.protocol_label }}</td></tr>
-      <tr><th>Eingabe</th><td>{{ query.input_timestamp|date:"Y-m-d H:i:s" }} ({{ query.input_tz }})</td></tr>
-      <tr><th>Zeitpunkt UTC</th><td>{{ query.timestamp_utc|utc|date:"Y-m-d H:i:s" }} UTC</td></tr>
-      <tr><th>Zeitpunkt lokal</th><td>{{ query.timestamp_utc|localtime|date:"Y-m-d H:i:s T" }}</td></tr>
-      <tr><th>Anlass</th><td>{{ query.reference }}</td></tr>
+      <tr><th>Öffentliche IP</th><td>{{ result.public_ip }}</td></tr>
+      <tr><th>Port</th><td>{{ result.port }}</td></tr>
+      <tr><th>Protokoll</th><td>{{ result.protocol }}</td></tr>
+      <tr><th>Eingabe</th><td>{{ input_timestamp|date:"Y-m-d H:i:s" }} ({{ input_tz }})</td></tr>
+      <tr><th>Zeitpunkt UTC</th><td>{{ result.timestamp|utc|date:"Y-m-d H:i:s" }} UTC</td></tr>
+      <tr><th>Zeitpunkt lokal</th><td>{{ result.timestamp|localtime|date:"Y-m-d H:i:s T" }}</td></tr>
+      <tr><th>Suchfenster</th><td>{{ result.window_start|localtime|date:"d.m.Y H:i" }} – {{ result.window_end|localtime|date:"d.m.Y H:i T" }}</td></tr>
+      <tr><th>Durchsucht</th><td>{{ result.file_count }} Dateien, {{ result.event_count }} NAT-Events</td></tr>
+      <tr><th>Anlass</th><td>{{ reference }}</td></tr>
     </table>
-    <p class="muted">In Etappe 4 wird hier nfdump abgefragt.</p>
   </div>
   {% endif %}
 
