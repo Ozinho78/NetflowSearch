@@ -184,3 +184,14 @@ NAT_POOLS = [
 # Wie weit darf der gesuchte Zeitpunkt zurückliegen? Muss zur tatsächlichen
 # Aufbewahrung der nfcapd-Dateien passen (nfexpire / Löschkonzept).
 SEARCH_MAX_AGE_DAYS = int(os.environ.get("SEARCH_MAX_AGE_DAYS", "7"))
+
+
+# Pfad zu nfdump und zum nfcapd-Datenverzeichnis
+NFDUMP_BIN = os.environ.get("NFDUMP_BIN", "/usr/local/bin/nfdump")
+NFDUMP_DIR = Path(os.environ.get("NFDUMP_DIR", "/var/cache/nfdump"))
+# Zeitzone, in der nfdump 1.6 Zeitstempel ausgibt (= Systemzeit des Collectors)
+NFDUMP_TIMEZONE = os.environ.get("NFDUMP_TIMEZONE", "Europe/Berlin")
+# Maximale Laufzeit eines nfdump-Aufrufs in Sekunden
+NFDUMP_TIMEOUT = int(os.environ.get("NFDUMP_TIMEOUT", "30"))
+
+
