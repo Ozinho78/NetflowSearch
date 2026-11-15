@@ -202,3 +202,6 @@ SEARCH_LOOKBACK_HOURS = int(os.environ.get("SEARCH_LOOKBACK_HOURS", "24"))
 SEARCH_LOOKAHEAD_HOURS = int(os.environ.get("SEARCH_LOOKAHEAD_HOURS", "24"))
 
 
+# Liegt der gesuchte Zeitpunkt näher als X Sekunden an einem ADD/DELETE,
+# wird das Ergebnis als Grenzfall markiert (Uhrenabweichung beim Anfragenden)
+SEARCH_BOUNDARY_TOLERANCE_SECONDS = int(os.environ.get("SEARCH_BOUNDARY_TOLERANCE_SECONDS", "60"))
