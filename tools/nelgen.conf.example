@@ -1,0 +1,22 @@
+# nelgen – Lab-Konfiguration
+# Aufruf: nelgen.py <print|backfill|live> @/etc/nelgen/nelgen.conf [weitere Optionen]
+# Ein Argument pro Zeile, Form --option=wert
+
+# 10 CGN-Router (Loopbacks, ein Router pro "Standort")
+--routers=10.150.1.1,10.150.2.1,10.150.3.1,10.150.4.1,10.150.5.1,10.150.6.1,10.150.7.1,10.150.8.1,10.150.9.1,10.150.10.1
+
+# 10 öffentliche Pools (/25), je Router einer – nur nicht geroutete Netze:
+# RFC 5737 (TEST-NET-1/2/3) und RFC 2544 (Benchmark 198.18.0.0/15)
+--pools=192.0.2.0/25,192.0.2.128/25,198.51.100.0/25,198.51.100.128/25,203.0.113.0/25,203.0.113.128/25,198.18.0.0/25,198.18.0.128/25,198.19.0.0/25,198.19.0.128/25
+
+# genutzte öffentliche IPs pro Router (max. 126 je /25)
+--pool-size=24
+
+# Kunden gesamt (gleichmäßig auf die Router verteilt -> 500 pro Router)
+--subscribers=5000
+
+# Blockgröße abwechselnd je Router
+--block-sizes=2048,1024
+
+--seed=2026
+--state=/var/lib/nelgen/state.pkl
