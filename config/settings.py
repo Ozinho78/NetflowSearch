@@ -224,3 +224,7 @@ if os.environ.get("DJANGO_BEHIND_TLS_PROXY", "False").lower() == "true":
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     SESSION_COOKIE_SECURE = True   # Cookies nur über HTTPS
     CSRF_COOKIE_SECURE = True
+
+
+# HSTS und HTTP->HTTPS-Redirect übernimmt nginx auf der VPS
+SILENCED_SYSTEM_CHECKS = ["security.W004", "security.W008"]
