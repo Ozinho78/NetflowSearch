@@ -48,6 +48,23 @@
       </div>
     {% endif %}
 
+        {% if result.ambiguous %}
+      <div class="alert alert-warning">
+        <strong>Mehrdeutig:</strong> Zum angefragten Zeitpunkt war dieser Port
+        {{ result.assigned_inside_ips|length }} verschiedenen Kunden zugeordnet
+        (Port-Blöcke werden pro Protokoll vergeben).
+        Bitte das Protokoll beim Anfragenden erfragen und erneut suchen.
+      </div>
+    {% endif %}
+
+    {% if result.has_boundary_case %}
+      <div class="alert alert-warning">
+        <strong>Grenzfall:</strong> Der angefragte Zeitpunkt liegt sehr nahe an einer
+        Vergabe oder Freigabe. Bei abweichenden Uhren kann ein anderer Kunde betroffen sein.
+        Ergebnis manuell prüfen.
+      </div>
+    {% endif %}
+
     {% if result.assignments %}
     <div class="table-wrap">
       <table class="data-table">

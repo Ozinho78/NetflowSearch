@@ -57,6 +57,20 @@ class SearchResult:
     @property
     def found(self) -> bool:
         return any(a.status == ASSIGNED for a in self.assignments)
+    
+        @property
+    def assigned_inside_ips(self) -> set[str]:
+        """Alle internen IPs, denen der Port zum Zeitpunkt zugeordnet war."""
+        return {a.inside_ip for a in self.assignments if a.status == ASSIGNED and a.inside_ip}
+
+    @property
+    def ambiguous(self) -> bool:
+        """Mehr als ein Kunde (z. B. TCP und UDP an verschiedene Kunden)."""
+        return len(self.assigned_inside_ips) > 1
+
+    @property
+    def has_boundary_case(self) -> bool:
+        return any(a.near_boundary for a in self.assignments)
 
     @property
     def data_incomplete(self) -> bool:
