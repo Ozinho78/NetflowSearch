@@ -58,7 +58,7 @@ class SearchResult:
     def found(self) -> bool:
         return any(a.status == ASSIGNED for a in self.assignments)
     
-        @property
+    @property
     def assigned_inside_ips(self) -> set[str]:
         """Alle internen IPs, denen der Port zum Zeitpunkt zugeordnet war."""
         return {a.inside_ip for a in self.assignments if a.status == ASSIGNED and a.inside_ip}
