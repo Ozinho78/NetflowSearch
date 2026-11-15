@@ -46,6 +46,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -80,7 +81,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "NAME": os.environ.get("DJANGO_DB_PATH", BASE_DIR / "db.sqlite3"),
     }
 }
 
@@ -112,11 +113,14 @@ USE_TZ = True                    # DB speichert UTC, Anzeige in Europe/Berlin
 # --- Statische Dateien ------------------------------------------------------
 
 STATIC_URL = "static/"
-
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-STATIC_URL = "static/"
-STATICFILES_DIRS = [BASE_DIR / "static"]   # NEU: projektweite statische Dateien
+STATICFILES_DIRS = [BASE_DIR / "static"]
+# Ziel von collectstatic; von hier liefert WhiteNoise im Betrieb aus
+STATIC_ROOT = BASE_DIR / "staticfiles"
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    # komprimiert (gzip/brotli) und mit Hash im Dateinamen -> langes Caching möglich
+    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
+}
 
 
 # --- E-Mail -----------------------------------------------------------------
@@ -205,3 +209,18 @@ SEARCH_LOOKAHEAD_HOURS = int(os.environ.get("SEARCH_LOOKAHEAD_HOURS", "24"))
 # Liegt der gesuchte Zeitpunkt näher als X Sekunden an einem ADD/DELETE,
 # wird das Ergebnis als Grenzfall markiert (Uhrenabweichung beim Anfragenden)
 SEARCH_BOUNDARY_TOLERANCE_SECONDS = int(os.environ.get("SEARCH_BOUNDARY_TOLERANCE_SECONDS", "60"))
+
+# --- Betrieb hinter TLS-Reverse-Proxy (nginx auf der VPS) --------------------
+CSRF_TRUSTED_ORIGINS = [
+    o.strip()
+    for o in os.environ.get("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",")
+    if o.strip()
+]
+
+if os.environ.get("DJANGO_BEHIND_TLS_PROXY", "False").lower() == "true":
+    # Django sieht nur HTTP von nginx; dieser Header sagt ihm, dass der Client HTTPS nutzte.
+    # NUR sicher, wenn die App ausschließlich über den Proxy erreichbar ist (Firewall!)
+    # und der Proxy den Header immer selbst setzt (nie vom Client durchreicht).
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SESSION_COOKIE_SECURE = True   # Cookies nur über HTTPS
+    CSRF_COOKIE_SECURE = True
