@@ -2,6 +2,7 @@
 Django settings for nfsearch (netflow02).
 """
 
+import ipaddress
 import os
 from pathlib import Path
 
@@ -38,7 +39,9 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # NEU: eigene Apps
+        # eigene Apps
     "accounts",
+    "search",
 ]
 
 MIDDLEWARE = [
@@ -145,7 +148,8 @@ SERVER_EMAIL = DEFAULT_FROM_EMAIL
 # --- Login / Logout ---------------------------------------------------------
 # URL-Namen statt fester Pfade -> funktionieren auch, wenn sich Pfade ändern
 LOGIN_URL = "accounts:login"          # wohin @login_required umleitet
-LOGIN_REDIRECT_URL = "home"           # nach erfolgreichem Login (ohne ?next=)
+# LOGIN_REDIRECT_URL = "home"           # nach erfolgreichem Login (ohne ?next=)
+LOGIN_REDIRECT_URL = "search:index"   # war: "home"
 LOGOUT_REDIRECT_URL = "accounts:login"
 
 
@@ -165,3 +169,18 @@ SITE_URL = os.environ.get("SITE_URL", "http://127.0.0.1:8000").rstrip("/")
 
 # Gültigkeit von Aktivierungs- UND Passwort-Reset-Links (Sekunden)
 PASSWORD_RESET_TIMEOUT = 60 * 60 * 24   # 24 Stunden (Default wären 3 Tage)
+
+
+# --- Suche ------------------------------------------------------------------
+# Öffentliche CGN-Pools des Providers. Nur IPs daraus sind gültige Suchanfragen.
+# ip_network() wirft beim Start einen Fehler, wenn z. B. Host-Bits gesetzt sind
+# (203.0.113.5/24) -> Konfigurationsfehler fallen sofort auf.
+NAT_POOLS = [
+    ipaddress.ip_network(n.strip())
+    for n in os.environ.get("NAT_POOLS", "203.0.113.0/24").split(",")
+    if n.strip()
+]
+
+# Wie weit darf der gesuchte Zeitpunkt zurückliegen? Muss zur tatsächlichen
+# Aufbewahrung der nfcapd-Dateien passen (nfexpire / Löschkonzept).
+SEARCH_MAX_AGE_DAYS = int(os.environ.get("SEARCH_MAX_AGE_DAYS", "7"))

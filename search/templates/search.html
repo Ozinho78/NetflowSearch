@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load tz %}
+
+{% block title %}Suche – NetflowSearch{% endblock %}
+
+{% block content %}
+<div class="stack">
+
+  <div class="card">
+    <h1>CGNAT-Zuordnung suchen</h1>
+    <p class="muted">Öffentliche IP, Port und Zeitpunkt aus der Anfrage eingeben.</p>
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+      <div class="form-grid">
+        {{ form.as_div }}
+      </div>
+      <button type="submit" class="btn btn-primary">Suchen</button>
+    </form>
+  </div>
+
+  {% if query %}
+  <div class="card">
+    <h2>Abfrage (Vorschau)</h2>
+    <table class="result-table">
+      <tr><th>Öffentliche IP</th><td>{{ query.public_ip }}</td></tr>
+      <tr><th>Port</th><td>{{ query.port }}</td></tr>
+      <tr><th>Protokoll</th><td>{{ query.protocol_label }}</td></tr>
+      <tr><th>Eingabe</th><td>{{ query.input_timestamp|date:"Y-m-d H:i:s" }} ({{ query.input_tz }})</td></tr>
+      <tr><th>Zeitpunkt UTC</th><td>{{ query.timestamp_utc|utc|date:"Y-m-d H:i:s" }} UTC</td></tr>
+      <tr><th>Zeitpunkt lokal</th><td>{{ query.timestamp_utc|localtime|date:"Y-m-d H:i:s T" }}</td></tr>
+      <tr><th>Anlass</th><td>{{ query.reference }}</td></tr>
+    </table>
+    <p class="muted">In Etappe 4 wird hier nfdump abgefragt.</p>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

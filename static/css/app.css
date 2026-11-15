@@ -238,3 +238,49 @@ select:focus {
   background: var(--warning-bg);
   color: var(--warning);
 }
+
+/* ---------- Suche ---------- */
+.stack > * + * {
+  margin-top: 1.5rem;
+}
+
+.card h1 {
+  margin-top: 0;
+}
+.card h2 {
+  margin-top: 0;
+  font-size: 1.2rem;
+}
+
+/* Formularfelder zweispaltig, auf schmalen Bildschirmen einspaltig */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 0 1.5rem;
+  margin-bottom: 1rem;
+}
+.form-grid > div {
+  margin-bottom: 1rem;
+}
+.form-grid > .errorlist.nonfield {
+  grid-column: 1 / -1;
+}
+
+.result-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.result-table th,
+.result-table td {
+  padding: 0.55rem 0.25rem;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+.result-table th {
+  width: 200px;
+  color: var(--muted);
+  font-weight: 600;
+}
+.result-table td {
+  font-family: var(--mono);
+}
