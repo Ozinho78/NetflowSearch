@@ -24,7 +24,7 @@ class RegisterView(CreateView):
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            return redirect("home")
+            return redirect("search:index")
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):

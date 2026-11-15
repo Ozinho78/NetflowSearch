@@ -252,6 +252,26 @@ select:focus {
   font-size: 1.2rem;
 }
 
+/* Reihenfolge innerhalb eines Feldes: Label, Eingabe, Fehler, Hilfetext */
+.form-grid > div {
+  display: flex;
+  flex-direction: column;
+}
+.form-grid > div > label {
+  order: 0;
+}
+.form-grid > div > input,
+.form-grid > div > select {
+  order: 1;
+}
+.form-grid > div > .errorlist {
+  order: 2;
+  margin: 0.35rem 0 0;
+}
+.form-grid > div > .helptext {
+  order: 3;
+}
+
 /* Formularfelder zweispaltig, auf schmalen Bildschirmen einspaltig */
 .form-grid {
   display: grid;
