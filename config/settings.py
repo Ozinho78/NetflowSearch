@@ -119,8 +119,28 @@ STATICFILES_DIRS = [BASE_DIR / "static"]   # NEU: projektweite statische Dateien
 # --- E-Mail -----------------------------------------------------------------
 
 # NEU: Mails erscheinen in der Entwicklung im runserver-Terminal
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-DEFAULT_FROM_EMAIL = "nfsearch <noreply@localhost>"
+# EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+# DEFAULT_FROM_EMAIL = "nfsearch <noreply@localhost>"
+# --- E-Mail -----------------------------------------------------------------
+# Backend per .env umschaltbar: console (Entwicklung) oder smtp (echter Versand)
+EMAIL_BACKEND = os.environ.get(
+    "EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
+)
+
+EMAIL_HOST = os.environ.get("EMAIL_HOST", "localhost")
+EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "465"))
+# 465 = implizites TLS (SMTPS), 587 = STARTTLS -> nie beides gleichzeitig
+EMAIL_USE_SSL = os.environ.get("EMAIL_USE_SSL", "True").lower() == "true"
+EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "False").lower() == "true"
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
+# Ohne Timeout hängt ein Request bei Netzproblemen sehr lange (Default: None)
+EMAIL_TIMEOUT = int(os.environ.get("EMAIL_TIMEOUT", "10"))
+
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "nfsearch <noreply@localhost>")
+# Absender für Fehlermails an ADMINS (später relevant)
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
+
 
 # --- Login / Logout ---------------------------------------------------------
 # URL-Namen statt fester Pfade -> funktionieren auch, wenn sich Pfade ändern
@@ -136,10 +156,12 @@ REGISTRATION_ALLOWED_DOMAINS = [
     if d.strip()
 ]
 
+
 # --- Kontoaktivierung -------------------------------------------------------
 # Basis-URL für Links in Mails. Bewusst aus der Config und NICHT aus dem
 # Host-Header des Requests -> verhindert Host-Header-Injection in Mail-Links.
 SITE_URL = os.environ.get("SITE_URL", "http://127.0.0.1:8000").rstrip("/")
+
 
 # Gültigkeit von Aktivierungs- UND Passwort-Reset-Links (Sekunden)
 PASSWORD_RESET_TIMEOUT = 60 * 60 * 24   # 24 Stunden (Default wären 3 Tage)
